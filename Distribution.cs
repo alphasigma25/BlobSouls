@@ -21,8 +21,6 @@ internal abstract class RandomDistribution<T> : IDistribution<T>
 
 internal class ConstDistribution<T> : IDistribution<T>
 {
-    public static implicit operator ConstDistribution<T>(T val) => new(val);
-
     public ConstDistribution(T val)
     {
         this.val = val;

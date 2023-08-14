@@ -31,7 +31,7 @@ internal static class Program
 
         BlobTeam t5 = new(10, () => groupHelper, new Soul(0f));
 
-        BlobSimulationManager bsm = new(10, new[] { t1, t2, t3 }, 0.2f);
+        BlobSimulationManager bsm = new(10, 0.2f, t1, t2, t3);
 
         bsm.RunSimulation(500);
     }
