@@ -16,7 +16,7 @@ internal class BlobTeam
 
     private readonly Func<float> groupHelperDistribution;
 
-    private readonly Func<Soul> soulDistribution;
+    private readonly IEnumerator<Soul> soulDistribution;
 
     public int Construction { get; set; }
 
@@ -38,14 +38,14 @@ internal class BlobTeam
     public BlobTeam(
         int nbBlobs,
         Func<float> groupHelperDistribution,
-        Func<Soul> soulDistribution)
+        IEnumerable<Soul> soulDistribution)
     {
         TeamNumber = NumberOfTeams++;
         Construction = 0;
         NbBlobs = nbBlobs;
         Blobs = new();
         this.groupHelperDistribution = groupHelperDistribution;
-        this.soulDistribution = soulDistribution;
+        this.soulDistribution = soulDistribution.GetEnumerator();
         CreateBlobs();
     }
 
@@ -55,8 +55,9 @@ internal class BlobTeam
     {
         while (Blobs.Count < NbBlobs)
         {
+            soulDistribution.MoveNext();
             Blobs.Add(new Blob(
-                soulDistribution(),
+                soulDistribution.Current,
                 groupHelperDistribution(),
                 TeamNumber));
         }
