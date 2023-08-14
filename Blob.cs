@@ -8,6 +8,9 @@ internal class Blob
     public float attackAlly { get; }
     public int teamNumber { get; }
 
+    public string Stats =>
+        $"healEnemy % {healEnemy}\nhealAlly % {healAlly}\nattackEnemy % {attackEnemy}\nattackAlly % {attackAlly}";
+
     public int health { get; set; }
 
     public Soul Soul { get; private set; }
@@ -15,7 +18,7 @@ internal class Blob
     public Blob(Soul soul, float groupHelper, int teamNumber)
     {
         Soul = soul;
-        healEnemy = soul.getHeal + groupHelper;
+        healEnemy = soul.getHeal;
         healEnemy = healEnemy < 0 ? 0 : healEnemy;
 
         healAlly = soul.getHeal + groupHelper;
@@ -24,7 +27,7 @@ internal class Blob
         attackEnemy = soul.getAttack + groupHelper;
         attackEnemy = attackEnemy > 1 ? 1 : attackEnemy;
 
-        attackAlly = soul.getAttack + groupHelper;
+        attackAlly = soul.getAttack;
         attackAlly = attackAlly < 0 ? 0 : attackAlly;
 
         health = 100;

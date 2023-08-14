@@ -33,7 +33,7 @@ internal class BlobTeam
         Func<Soul> soulDistribution
     )
     {
-        this.teamNumber = numberOfTeams++;
+        teamNumber = numberOfTeams++;
         Construction = 0;
         this.nbBlobs = nbBlobs;
         Blobs = new();
