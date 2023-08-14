@@ -70,3 +70,15 @@ internal class GaussianDistribution : RandomDistribution<float>
     private readonly float mean;
     private readonly float stdDev;
 }
+
+internal class SoulDistribution : IDistribution<Soul>
+{
+    internal SoulDistribution(IDistribution<float> distrib)
+    {
+        this.distrib = distrib;
+    }
+
+    public Soul GetValue() => new(distrib.GetValue());
+
+    private readonly IDistribution<float> distrib;
+}

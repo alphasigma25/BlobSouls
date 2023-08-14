@@ -16,7 +16,7 @@ internal class BlobTeam
 
     private readonly Func<float> groupHelperDistribution;
 
-    private readonly IDistribution<float> soulDistribution;
+    private readonly IDistribution<Soul> soulDistribution;
 
     public int Construction { get; set; }
 
@@ -38,7 +38,7 @@ internal class BlobTeam
     public BlobTeam(
         int nbBlobs,
         Func<float> groupHelperDistribution,
-        IDistribution<float> soulDistribution)
+        IDistribution<Soul> soulDistribution)
     {
         TeamNumber = NumberOfTeams++;
         Construction = 0;
@@ -56,7 +56,7 @@ internal class BlobTeam
         while (Blobs.Count < NbBlobs)
         {
             Blobs.Add(new Blob(
-                new Soul(soulDistribution.GetValue()),
+                soulDistribution.GetValue(),
                 groupHelperDistribution(),
                 TeamNumber));
         }

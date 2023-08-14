@@ -21,11 +21,15 @@ internal static class Program
         const float groupHelper = 0.7f;
         const float vari = 0.2f;
 
-        BlobTeam t1 = new(10, () => groupHelper, new GaussianDistribution(0.5f, vari));
+        BlobTeam t1 = new(10, () => groupHelper, new SoulDistribution(new GaussianDistribution(0.5f, vari)));
 
-        BlobTeam t2 = new(10, () => groupHelper, new GaussianDistribution(0, vari));
+        BlobTeam t2 = new(10, () => groupHelper, new SoulDistribution(new GaussianDistribution(0, vari)));
 
-        BlobTeam t3 = new(10, () => groupHelper, new GaussianDistribution(-0.5f, vari));
+        BlobTeam t3 = new(10, () => groupHelper, new SoulDistribution(new GaussianDistribution(-0.5f, vari)));
+
+        BlobTeam t4 = new(10, () => groupHelper, new SoulDistribution(new ConstDistribution<float>(0f)));
+
+        BlobTeam t5 = new(10, () => groupHelper, new ConstDistribution<Soul>(new Soul(0f)));
 
         BlobSimulationManager bsm = new(10, new[] { t1, t2, t3 }, 0.2f);
 
