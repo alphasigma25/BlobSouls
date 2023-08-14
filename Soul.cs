@@ -1,6 +1,6 @@
 ﻿namespace BlobSouls;
 
-internal class Soul
+internal readonly struct Soul
 {
     public Soul(float soulCoef)
     {
