@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace BlobSouls;
@@ -14,7 +13,7 @@ internal class BlobTeam
 
     public int TeamNumber { get; }
 
-    private readonly Func<float> groupHelperDistribution;
+    private readonly IDistribution<float> groupHelperDistribution;
 
     private readonly IDistribution<Soul> soulDistribution;
 
@@ -37,7 +36,7 @@ internal class BlobTeam
 
     public BlobTeam(
         int nbBlobs,
-        Func<float> groupHelperDistribution,
+        IDistribution<float> groupHelperDistribution,
         IDistribution<Soul> soulDistribution)
     {
         TeamNumber = NumberOfTeams++;
@@ -57,7 +56,7 @@ internal class BlobTeam
         {
             Blobs.Add(new Blob(
                 soulDistribution.GetValue(),
-                groupHelperDistribution(),
+                groupHelperDistribution.GetValue(),
                 TeamNumber));
         }
     }

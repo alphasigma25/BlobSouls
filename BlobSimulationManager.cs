@@ -23,7 +23,7 @@ internal class BlobSimulationManager
         this.materialSpawnProb = materialSpawnProb;
         this.teams = teams;
 
-        Random rnd = new();
+        Random rnd = new(Random.Shared.Next());
 
         blobGrid = new List<Blob>[gridSize, gridSize];
         materialGrid = new bool[gridSize, gridSize];
