@@ -2,18 +2,38 @@
 
 namespace BlobSouls;
 
-internal class Distribution
+internal interface IDistribution
 {
-    private readonly Random rnd;
+    float GetValue();
+}
 
-    public Distribution()
+internal class UniformDistribution : IDistribution
+{
+    internal UniformDistribution(float min, float max)
     {
-        rnd = new Random();
+        this.min = min;
+        this.max = max;
+
+        rnd = new Random(Random.Shared.Next());
     }
 
-    public float GetUniform(float min, float max) => ((float)rnd.NextDouble() * (max - min)) + min;
+    public float GetValue() => ((float)rnd.NextDouble() * (max - min)) + min;
 
-    public float GetGaussian(float mean, float stdDev)
+    private readonly float min;
+    private readonly float max;
+    private readonly Random rnd;
+}
+
+internal class GaussianDistribution : IDistribution
+{
+    internal GaussianDistribution(float mean, float stdDev)
+    {
+        this.mean = mean;
+        this.stdDev = stdDev;
+        rnd = new Random(Random.Shared.Next());
+    }
+
+    public float GetValue()
     {
         double u1 = 1.0 - rnd.NextDouble(); // uniform(0,1] random doubles
 
@@ -26,4 +46,8 @@ internal class Distribution
 
         return (float)randNormal;
     }
+
+    private readonly float mean;
+    private readonly float stdDev;
+    private readonly Random rnd;
 }
