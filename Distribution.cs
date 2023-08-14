@@ -2,9 +2,11 @@
 
 namespace BlobSouls;
 
-internal interface IDistribution<out T>
+internal abstract class IDistribution<T>
 {
-    T GetValue();
+    internal abstract T GetValue();
+
+    public static implicit operator IDistribution<T>(T val) => new ConstDistribution<T>(val);
 }
 
 internal abstract class RandomDistribution<T> : IDistribution<T>
@@ -14,19 +16,19 @@ internal abstract class RandomDistribution<T> : IDistribution<T>
         Rnd = new Random(Random.Shared.Next());
     }
 
-    public abstract T GetValue();
-
     private protected Random Rnd { get; }
 }
 
 internal class ConstDistribution<T> : IDistribution<T>
 {
+    public static implicit operator ConstDistribution<T>(T val) => new(val);
+
     public ConstDistribution(T val)
     {
         this.val = val;
     }
 
-    public T GetValue() => val;
+    internal override T GetValue() => val;
 
     private readonly T val;
 }
@@ -39,7 +41,7 @@ internal class UniformDistribution : RandomDistribution<float>
         this.max = max;
     }
 
-    public override float GetValue() => ((float)Rnd.NextDouble() * (max - min)) + min;
+    internal override float GetValue() => ((float)Rnd.NextDouble() * (max - min)) + min;
 
     private readonly float min;
     private readonly float max;
@@ -53,7 +55,7 @@ internal class GaussianDistribution : RandomDistribution<float>
         this.stdDev = stdDev;
     }
 
-    public override float GetValue()
+    internal override float GetValue()
     {
         double u1 = 1.0 - Rnd.NextDouble(); // uniform(0,1] random doubles
 
@@ -78,7 +80,7 @@ internal class SoulDistribution : IDistribution<Soul>
         this.distrib = distrib;
     }
 
-    public Soul GetValue() => new(distrib.GetValue());
+    internal override Soul GetValue() => new(distrib.GetValue());
 
     private readonly IDistribution<float> distrib;
 }

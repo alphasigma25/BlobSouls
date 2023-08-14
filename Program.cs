@@ -27,9 +27,9 @@ internal static class Program
 
         BlobTeam t3 = new(10, () => groupHelper, new SoulDistribution(new GaussianDistribution(-0.5f, vari)));
 
-        BlobTeam t4 = new(10, () => groupHelper, new SoulDistribution(new ConstDistribution<float>(0f)));
+        BlobTeam t4 = new(10, () => groupHelper, new SoulDistribution(0f));
 
-        BlobTeam t5 = new(10, () => groupHelper, new ConstDistribution<Soul>(new Soul(0f)));
+        BlobTeam t5 = new(10, () => groupHelper, new Soul(0f));
 
         BlobSimulationManager bsm = new(10, new[] { t1, t2, t3 }, 0.2f);
 
