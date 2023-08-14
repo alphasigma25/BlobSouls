@@ -17,7 +17,7 @@ internal class BlobSimulationManager
 
     private readonly float materialSpawnProb;
 
-    public BlobSimulationManager(int gridSize, BlobTeam[] teams, float materialSpawnProb)
+    public BlobSimulationManager(int gridSize, float materialSpawnProb, params BlobTeam[] teams)
     {
         this.gridSize = gridSize;
         this.materialSpawnProb = materialSpawnProb;
