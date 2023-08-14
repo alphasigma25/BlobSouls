@@ -2,44 +2,43 @@
 
 internal class Blob
 {
-    public float healEnemy { get; }
-    public float healAlly { get; }
-    public float attackEnemy { get; }
-    public float attackAlly { get; }
-    public int teamNumber { get; }
+    public float HealEnemy { get; }
+
+    public float HealAlly { get; }
+
+    public float AttackEnemy { get; }
+
+    public float AttackAlly { get; }
+
+    public int TeamNumber { get; }
 
     public string Stats =>
-        $"healEnemy % {healEnemy}\nhealAlly % {healAlly}\nattackEnemy % {attackEnemy}\nattackAlly % {attackAlly}";
+        $"healEnemy % {HealEnemy}\nhealAlly % {HealAlly}\nattackEnemy % {AttackEnemy}\nattackAlly % {AttackAlly}";
 
-    public int health { get; set; }
+    public int Health { get; set; }
 
-    public Soul Soul { get; private set; }
+    public Soul Soul { get; }
 
     public Blob(Soul soul, float groupHelper, int teamNumber)
     {
         Soul = soul;
-        healEnemy = soul.getHeal;
-        healEnemy = healEnemy < 0 ? 0 : healEnemy;
+        HealEnemy = soul.GetHeal;
+        HealEnemy = HealEnemy < 0 ? 0 : HealEnemy;
 
-        healAlly = soul.getHeal + groupHelper;
-        healAlly = healAlly > 1 ? 1 : healAlly;
+        HealAlly = soul.GetHeal + groupHelper;
+        HealAlly = HealAlly > 1 ? 1 : HealAlly;
 
-        attackEnemy = soul.getAttack + groupHelper;
-        attackEnemy = attackEnemy > 1 ? 1 : attackEnemy;
+        AttackEnemy = soul.GetAttack + groupHelper;
+        AttackEnemy = AttackEnemy > 1 ? 1 : AttackEnemy;
 
-        attackAlly = soul.getAttack;
-        attackAlly = attackAlly < 0 ? 0 : attackAlly;
+        AttackAlly = soul.GetAttack;
+        AttackAlly = AttackAlly < 0 ? 0 : AttackAlly;
 
-        health = 100;
-        this.teamNumber = teamNumber;
+        Health = 100;
+        TeamNumber = teamNumber;
     }
 
-    public void getAttacked(int lifeLoss)
-    {
-        health -= lifeLoss;
-    }
-    public void getHealed()
-    {
-        health = 100;
-    }
+    public void GetAttacked(int lifeLoss) => Health -= lifeLoss;
+
+    public void GetHealed() => Health = 100;
 }

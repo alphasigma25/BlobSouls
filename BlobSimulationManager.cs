@@ -1,89 +1,94 @@
-﻿using BlobSouls;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-
 namespace BlobSouls;
+
 internal class BlobSimulationManager
 {
-    private BlobTeam[] Teams;
+    private readonly BlobTeam[] teams;
 
-    private List<Blob>[,] BlobGrid;
-    private bool[,] MaterialGrid;
+    private readonly List<Blob>[,] blobGrid;
 
-    private int GridSize;
-    private float MaterialSpawnProb;
+    private readonly bool[,] materialGrid;
+
+    private readonly int gridSize;
+
+    private readonly float materialSpawnProb;
 
     public BlobSimulationManager(int gridSize, BlobTeam[] teams, float materialSpawnProb)
     {
-        GridSize = gridSize;
-        MaterialSpawnProb = materialSpawnProb;
-        Teams = teams;
+        this.gridSize = gridSize;
+        this.materialSpawnProb = materialSpawnProb;
+        this.teams = teams;
 
-        Random rnd = new Random();
+        Random rnd = new();
 
-        BlobGrid = new List<Blob>[gridSize, gridSize];
-        MaterialGrid = new bool[gridSize, gridSize];
+        blobGrid = new List<Blob>[gridSize, gridSize];
+        materialGrid = new bool[gridSize, gridSize];
         for (int i = 0; i < gridSize; i++)
         {
             for (int j = 0; j < gridSize; j++)
             {
-                BlobGrid[i, j] = new List<Blob>();
-                MaterialGrid[i, j] = rnd.NextDouble() > MaterialSpawnProb;
+                blobGrid[i, j] = new List<Blob>();
+                materialGrid[i, j] = rnd.NextDouble() > this.materialSpawnProb;
             }
         }
     }
 
     public string Stats()
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
         // for each team : number of blobs, average health, value of Construction
-        sb.Append("Global Stats : \n");
-        sb.Append($"Total number of blobs : {Teams.Sum(team => team.Count)} \n");
-        sb.Append($"Average construction : {Teams.Average(team => team.Construction)} \n");
-        sb.Append($"Average health : {Teams.Average(team => team.AverageHealth)} \n");
+        sb.Append("Global Stats : \n")
+            .Append("Total number of blobs : ")
+            .Append(teams.Sum(team => team.Count))
+            .Append(" \n")
+            .Append("Average construction : ")
+            .Append(teams.Average(team => team.Construction))
+            .Append(" \n")
+            .Append("Average health : ")
+            .Append(teams.Average(team => team.AverageHealth))
+            .Append(" \n");
+
         return sb.ToString();
     }
 
     public string TeamsStats()
     {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new();
+
         sb.Append("Teams Stats :\n");
-        foreach (BlobTeam team in Teams)
-        {
+
+        foreach (BlobTeam team in teams)
             sb.Append(team.Stats());
-        }
+
         return sb.ToString();
     }
 
     private void MoveBlobsOnGrid()
     {
-        Random rnd = new Random();
-        foreach (BlobTeam team in Teams)
-        {
-            foreach (Blob blob in team.Blobs)
-            {
-                BlobGrid[rnd.Next(GridSize), rnd.Next(GridSize)].Add(blob);
-            }
-        }
+        Random rnd = new();
+
+        foreach (BlobTeam team in teams)
+            blobGrid[rnd.Next(gridSize), rnd.Next(gridSize)].AddRange(team.Blobs);
     }
 
     private void PerformAttacks()
     {
-        for (int i = 0; i < GridSize; i++)
+        for (int i = 0; i < gridSize; i++)
         {
-            for (int j = 0; j < GridSize; j++)
+            for (int j = 0; j < gridSize; j++)
             {
-                if (BlobGrid[i, j].Count > 1)
+                if (blobGrid[i, j].Count > 1)
                 {
-                    for (int k = 0; k < BlobGrid[i, j].Count; k++)
+                    for (int k = 0; k < blobGrid[i, j].Count; k++)
                     {
-                        for (int l = k + 1; l < BlobGrid[i, j].Count; l++)
-                        {
-                            ManageInteraction(BlobGrid[i, j][k], BlobGrid[i, j][l]);
-                        }
+                        for (int l = k + 1; l < blobGrid[i, j].Count; l++)
+                            ManageInteraction(blobGrid[i, j][k], blobGrid[i, j][l]);
                     }
-                    BlobGrid[i, j].RemoveAll(blob => blob.health <= 0);
+                    blobGrid[i, j].RemoveAll(blob => blob.Health <= 0);
                 }
             }
         }
@@ -97,96 +102,86 @@ internal class BlobSimulationManager
 
     private void ManageInteraction(Blob b1, Blob b2)
     {
-        Random rnd = new Random();
-        bool areAllies = b1.teamNumber == b2.teamNumber;
+        Random rnd = new();
+        bool areAllies = b1.TeamNumber == b2.TeamNumber;
 
-        bool b1Attack = areAllies && rnd.NextDouble() > b1.attackAlly || !areAllies && rnd.NextDouble() > b1.attackEnemy;
-        bool b2Attack = areAllies && rnd.NextDouble() > b2.attackAlly || !areAllies && rnd.NextDouble() > b2.attackEnemy;
-        bool b1Heal = areAllies && rnd.NextDouble() > b1.healAlly || !areAllies && rnd.NextDouble() > b1.healEnemy;
-        bool b2Heal = areAllies && rnd.NextDouble() > b2.healAlly || !areAllies && rnd.NextDouble() > b2.healEnemy;
+        bool b1Attack = (areAllies && rnd.NextDouble() > b1.AttackAlly) || (!areAllies && rnd.NextDouble() > b1.AttackEnemy);
+        bool b2Attack = (areAllies && rnd.NextDouble() > b2.AttackAlly) || (!areAllies && rnd.NextDouble() > b2.AttackEnemy);
+        bool b1Heal = (areAllies && rnd.NextDouble() > b1.HealAlly) || (!areAllies && rnd.NextDouble() > b1.HealEnemy);
+        bool b2Heal = (areAllies && rnd.NextDouble() > b2.HealAlly) || (!areAllies && rnd.NextDouble() > b2.HealEnemy);
 
         if (b1Attack && b2Attack)
         {
-            b1.getAttacked(rnd.Next(0, 100));
-            b2.getAttacked(rnd.Next(0, 100));
+            b1.GetAttacked(rnd.Next(0, 100));
+            b2.GetAttacked(rnd.Next(0, 100));
             if (areAllies)
-            {
                 numberOfAlliesAttacked += 2;
-            } else
-            {
+            else
                 numberOfEnemiesAttacked += 2;
-            }
-        } else
-        if (b1Attack)
+        }
+        else if (b1Attack)
         {
-            b2.getAttacked(rnd.Next(30, 100));
-            b1.getAttacked(rnd.Next(0, 70));
+            b2.GetAttacked(rnd.Next(30, 100));
+            b1.GetAttacked(rnd.Next(0, 70));
             if (areAllies)
-            {
                 numberOfAlliesAttacked++;
-            } else
-            {
+            else
                 numberOfEnemiesAttacked++;
-            }
-        } else
-        if (b2Attack)
+        }
+        else if (b2Attack)
         {
-            b1.getAttacked(rnd.Next(30, 100));
-            b2.getAttacked(rnd.Next(0, 70));
+            b1.GetAttacked(rnd.Next(30, 100));
+            b2.GetAttacked(rnd.Next(0, 70));
             if (areAllies)
-            {
                 numberOfAlliesAttacked++;
-            } else
-            {
+            else
                 numberOfEnemiesAttacked++;
-            }
-        } else
+        }
+        else
         {
             if (b1Heal)
             {
-                b2.getHealed();
+                b2.GetHealed();
                 if (areAllies)
-                {
                     numberOfAlliesHealed++;
-                } else
-                {
+                else
                     numberOfEnemiesHealed++;
-                }
             }
             if (b2Heal)
             {
-                b1.getHealed();
+                b1.GetHealed();
                 if (areAllies)
-                {
                     numberOfAlliesHealed++;
-                } else
-                {
+                else
                     numberOfEnemiesHealed++;
-                }
-            } else
+            }
+            else
             {
                 numberOfPassiveInteractions++;
             }
         }
-        if (b1.health <= 0) numberOfKilled++;
-        if (b2.health <= 0) numberOfKilled++;
+
+        if (b1.Health <= 0)
+            numberOfKilled++;
+
+        if (b2.Health <= 0)
+            numberOfKilled++;
     }
 
-    private int numberOfKilled = 0;
+    private int numberOfKilled;
 
     private void BlobCollectMaterial()
     {
-        for (int i = 0; i < GridSize; i++)
+        for (int i = 0; i < gridSize; i++)
         {
-            for (int j = 0; j < GridSize; j++)
+            for (int j = 0; j < gridSize; j++)
             {
-                if (MaterialGrid[i, j])
+                if (materialGrid[i, j])
                 {
-                    foreach (Blob blob in BlobGrid[i, j])
-                    {
-                        Teams[blob.teamNumber].Construction += 1 / BlobGrid[i, j].Count;
-                    }
-                    MaterialGrid[i, j] = false;
+                    foreach (Blob blob in blobGrid[i, j])
+                        teams[blob.TeamNumber].Construction += 1 / blobGrid[i, j].Count;
+
+                    materialGrid[i, j] = false;
                 }
             }
         }
@@ -194,29 +189,26 @@ internal class BlobSimulationManager
 
     private void GoBackHome()
     {
-        for (int i = 0; i < GridSize; i++)
+        for (int i = 0; i < gridSize; i++)
         {
-            for (int j = 0; j < GridSize; j++)
-            {
-                BlobGrid[i, j].Clear();
-            }
+            for (int j = 0; j < gridSize; j++)
+                blobGrid[i, j].Clear();
         }
-        foreach (BlobTeam team in Teams)
-        {
+        foreach (BlobTeam team in teams)
             team.RemoveDeadBlobs();
-        }
     }
 
     private void EndOfDay()
     {
         GoBackHome();
-        foreach (BlobTeam team in Teams)
+        foreach (BlobTeam team in teams)
         {
             team.RemoveDeadBlobs();
             team.CreateBlobs();
             foreach (Blob blob in team.Blobs)
             {
-                if (blob.health <= 90) blob.health += 10;
+                if (blob.Health <= 90)
+                    blob.Health += 10;
             }
         }
         MaterialGrowth();
@@ -224,13 +216,11 @@ internal class BlobSimulationManager
 
     private void MaterialGrowth()
     {
-        Random rnd = new Random();
-        for (int i = 0; i < GridSize; i++)
+        Random rnd = new();
+        for (int i = 0; i < gridSize; i++)
         {
-            for (int j = 0; j < GridSize; j++)
-            {
-                MaterialGrid[i, j] = MaterialGrid[i, j] ? true : rnd.NextDouble() > MaterialSpawnProb;
-            }
+            for (int j = 0; j < gridSize; j++)
+                materialGrid[i, j] = materialGrid[i, j] || rnd.NextDouble() > materialSpawnProb;
         }
     }
 
@@ -240,13 +230,13 @@ internal class BlobSimulationManager
         {
             MoveBlobsOnGrid();
             PerformAttacks();
-            foreach (BlobTeam team in Teams)
+            foreach (BlobTeam team in teams)
                 team.RemoveDeadBlobs();
+
             BlobCollectMaterial();
             GoBackHome();
         }
         EndOfDay();
-
     }
 
     public void RunSimulation(int nbSteps, bool verbose = false)
@@ -256,9 +246,13 @@ internal class BlobSimulationManager
         Console.WriteLine(TeamsStats());
         for (int i = 0; i < nbSteps; i++)
         {
-            if (verbose) Console.WriteLine($"Step {i} : ");
+            if (verbose)
+                Console.WriteLine($"Step {i} : ");
+
             SimulationStep(20);
-            if (verbose) Console.WriteLine(Stats());
+
+            if (verbose)
+                Console.WriteLine(Stats());
         }
         Console.WriteLine("Final state : ");
         SimulationStep(5);
@@ -273,4 +267,3 @@ internal class BlobSimulationManager
         Console.WriteLine($"Number of killed blobs : {numberOfKilled}");
     }
 }
-

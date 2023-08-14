@@ -1,60 +1,78 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace BlobSouls;
+
 internal class BlobTeam
 {
-    public List<Blob> Blobs;
-    public int Count => Blobs.Count;
-    public int nbBlobs { get; private set; }
-    public int teamNumber { get; private set; }
+    public List<Blob> Blobs { get; }
 
-    private Func<float> groupHelperDistribution;
-    private Func<Soul> soulDistribution;
+    public int Count => Blobs.Count;
+
+    public int NbBlobs { get; }
+
+    public int TeamNumber { get; }
+
+    private readonly Func<float> groupHelperDistribution;
+
+    private readonly Func<Soul> soulDistribution;
 
     public int Construction { get; set; }
+
     private float SoulCoefMean => Blobs.Average(blob => blob.Soul.Coef);
 
-    public float AverageHealth => Blobs.Average(blob => (float)blob.health);
+    public float AverageHealth => Blobs.Average(blob => (float)blob.Health);
 
     public string Stats()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.Append($"Team {teamNumber} : \n");
-        sb.Append($"Number of blobs : {Blobs.Count} \n");
-        sb.Append($"Average health : {Blobs.Average(blob => blob.health)} \n");
-        sb.Append($"Construction : {Construction} \n");
-        sb.Append($"SoulCoefMean : {SoulCoefMean} \n");
+        StringBuilder sb = new();
+        sb.Append("Team ")
+            .Append(TeamNumber)
+            .Append(" : \n")
+            .Append("Number of blobs : ")
+            .Append(Blobs.Count)
+            .Append(" \n")
+            .Append("Average health : ")
+            .Append(Blobs.Average(blob => blob.Health))
+            .Append(" \n")
+            .Append("Construction : ")
+            .Append(Construction)
+            .Append(" \n")
+            .Append("SoulCoefMean : ")
+            .Append(SoulCoefMean)
+            .Append(" \n");
+
         return sb.ToString();
     }
 
     public BlobTeam(
         int nbBlobs,
         Func<float> groupHelperDistribution,
-        Func<Soul> soulDistribution
-    )
+        Func<Soul> soulDistribution)
     {
-        teamNumber = numberOfTeams++;
+        TeamNumber = NumberOfTeams++;
         Construction = 0;
-        this.nbBlobs = nbBlobs;
+        NbBlobs = nbBlobs;
         Blobs = new();
         this.groupHelperDistribution = groupHelperDistribution;
         this.soulDistribution = soulDistribution;
         CreateBlobs();
     }
 
-    public void RemoveDeadBlobs()
-    {
-        Blobs.RemoveAll(blob => blob.health <= 0);
-    }
+    public void RemoveDeadBlobs() => Blobs.RemoveAll(blob => blob.Health <= 0);
 
     public void CreateBlobs()
     {
-        while (Blobs.Count < nbBlobs)
+        while (Blobs.Count < NbBlobs)
         {
-            Blobs.Add(new Blob(soulDistribution(),
-                groupHelperDistribution(), teamNumber));
+            Blobs.Add(new Blob(
+                soulDistribution(),
+                groupHelperDistribution(),
+                TeamNumber));
         }
     }
 
-    static public int numberOfTeams { get; set; } = 0;
+    public static int NumberOfTeams { get; set; }
 }
