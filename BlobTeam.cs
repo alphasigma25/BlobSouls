@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace BlobSouls;
 
@@ -27,24 +26,13 @@ internal class BlobTeam
 
     public string Stats()
     {
-        StringBuilder sb = new();
-        sb.Append("Team ")
-            .Append(TeamNumber)
-            .Append(" : \n")
-            .Append("Number of blobs : ")
-            .Append(Blobs.Count)
-            .Append(" \n")
-            .Append("Average health : ")
-            .Append(Blobs.Average(blob => blob.Health))
-            .Append(" \n")
-            .Append("Construction : ")
-            .Append(Construction)
-            .Append(" \n")
-            .Append("SoulCoefMean : ")
-            .Append(SoulCoefMean)
-            .Append(" \n");
-
-        return sb.ToString();
+        return $"""
+            Team {TeamNumber} :
+                Number of blobs : {Blobs.Count}
+                Average health : {Blobs.Average(blob => blob.Health)}
+                Construction : {Construction}
+                SoulCoefMean : {SoulCoefMean}
+            """;
     }
 
     public BlobTeam(

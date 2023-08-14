@@ -13,7 +13,12 @@ internal class Blob
     public int TeamNumber { get; }
 
     public string Stats =>
-        $"healEnemy % {HealEnemy}\nhealAlly % {HealAlly}\nattackEnemy % {AttackEnemy}\nattackAlly % {AttackAlly}";
+        $"""
+        healEnemy % {HealEnemy}
+        healAlly % {HealAlly}
+        attackEnemy % {AttackEnemy}
+        attackAlly % {AttackAlly}
+        """;
 
     public int Health { get; set; }
 

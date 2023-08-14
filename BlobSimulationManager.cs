@@ -39,20 +39,12 @@ internal class BlobSimulationManager
 
     public string Stats()
     {
-        StringBuilder sb = new();
-        // for each team : number of blobs, average health, value of Construction
-        sb.Append("Global Stats : \n")
-            .Append("Total number of blobs : ")
-            .Append(teams.Sum(team => team.Count))
-            .Append(" \n")
-            .Append("Average construction : ")
-            .Append(teams.Average(team => team.Construction))
-            .Append(" \n")
-            .Append("Average health : ")
-            .Append(teams.Average(team => team.AverageHealth))
-            .Append(" \n");
-
-        return sb.ToString();
+        return $"""
+            Global Stats :
+                Total number of blobs : {teams.Sum(team => team.Count)}
+                Average construction : {teams.Average(team => team.Construction)}
+                Average health : {teams.Average(team => team.AverageHealth)}
+            """;
     }
 
     public string TeamsStats()
@@ -67,12 +59,16 @@ internal class BlobSimulationManager
         return sb.ToString();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Roslynator", "RCS1235:Optimize method call.", Justification = "<En attente>")]
     private void MoveBlobsOnGrid()
     {
         Random rnd = new();
 
         foreach (BlobTeam team in teams)
-            blobGrid[rnd.Next(gridSize), rnd.Next(gridSize)].AddRange(team.Blobs);
+        {
+            foreach (Blob blob in team.Blobs)
+                blobGrid[rnd.Next(gridSize), rnd.Next(gridSize)].Add(blob);
+        }
     }
 
     private void PerformAttacks()
@@ -194,6 +190,7 @@ internal class BlobSimulationManager
             for (int j = 0; j < gridSize; j++)
                 blobGrid[i, j].Clear();
         }
+
         foreach (BlobTeam team in teams)
             team.RemoveDeadBlobs();
     }
@@ -241,9 +238,13 @@ internal class BlobSimulationManager
 
     public void RunSimulation(int nbSteps, bool verbose = false)
     {
-        Console.WriteLine("Initial state : ");
-        Console.WriteLine(Stats());
-        Console.WriteLine(TeamsStats());
+        Console.WriteLine(
+            $"""
+            Initial state :
+            {Stats()}
+            {TeamsStats()}
+            """);
+
         for (int i = 0; i < nbSteps; i++)
         {
             if (verbose)
@@ -254,16 +255,20 @@ internal class BlobSimulationManager
             if (verbose)
                 Console.WriteLine(Stats());
         }
+
         Console.WriteLine("Final state : ");
         SimulationStep(5);
-        Console.WriteLine(Stats());
-        Console.WriteLine(TeamsStats());
 
-        Console.WriteLine($"Number of allies healed : {numberOfAlliesHealed}");
-        Console.WriteLine($"Number of enemies healed : {numberOfEnemiesHealed}");
-        Console.WriteLine($"Number of allies attacked : {numberOfAlliesAttacked}");
-        Console.WriteLine($"Number of enemies attacked : {numberOfEnemiesAttacked}");
-        Console.WriteLine($"Number of passive interactions : {numberOfPassiveInteractions}");
-        Console.WriteLine($"Number of killed blobs : {numberOfKilled}");
+        Console.WriteLine(
+            $"""
+            {Stats()}
+            {TeamsStats()}
+            Number of allies healed : {numberOfAlliesHealed}
+            Number of enemies healed : {numberOfEnemiesHealed}
+            Number of allies attacked : {numberOfAlliesAttacked}
+            Number of enemies attacked : {numberOfEnemiesAttacked}
+            Number of passive interactions : {numberOfPassiveInteractions}
+            Number of killed blobs : {numberOfKilled}
+            """);
     }
 }
