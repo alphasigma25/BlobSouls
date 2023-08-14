@@ -16,7 +16,7 @@ internal class BlobTeam
 
     private readonly Func<float> groupHelperDistribution;
 
-    private readonly IDistribution soulDistribution;
+    private readonly IDistribution<float> soulDistribution;
 
     public int Construction { get; set; }
 
@@ -38,7 +38,7 @@ internal class BlobTeam
     public BlobTeam(
         int nbBlobs,
         Func<float> groupHelperDistribution,
-        IDistribution soulDistribution)
+        IDistribution<float> soulDistribution)
     {
         TeamNumber = NumberOfTeams++;
         Construction = 0;
